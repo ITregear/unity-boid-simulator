@@ -30,9 +30,9 @@ public class Boid : MonoBehaviour
     void ApplyRules(){
         separationVector = Separate();
         alignmentVector = Align();
-        cohesionVector = Cohere();
+        // cohesionVector = Cohere();
 
-        velocity += separationVector + alignmentVector + cohesionVector;
+        velocity += separationVector + alignmentVector;
         velocity = Vector2.ClampMagnitude(velocity, maxSpeed);
     }
 
@@ -136,19 +136,21 @@ public class Boid : MonoBehaviour
     void WrapAround()
     {
         var viewportPosition = Camera.main.WorldToViewportPoint(transform.position);
-        var newPosition = transform.position;
 
-        if (viewportPosition.x > 1 || viewportPosition.x < 0)
+        // Define a margin to trigger the turn-around behavior
+        float margin = 0.1f;
+
+        if (viewportPosition.x > 1 - margin || viewportPosition.x < 0 + margin)
         {
-            newPosition.x = -newPosition.x;
+            velocity.x = -velocity.x; // Reverse the horizontal velocity
         }
 
-        if (viewportPosition.y > 1 || viewportPosition.y < 0)
+        if (viewportPosition.y > 1 - margin || viewportPosition.y < 0 + margin)
         {
-            newPosition.y = -newPosition.y;
+            velocity.y = -velocity.y; // Reverse the vertical velocity
         }
-
-        transform.position = newPosition;
     }
+
+
 
 }
