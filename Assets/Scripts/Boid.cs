@@ -1,20 +1,105 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class Boid : MonoBehaviour
 {
     public Vector2 velocity;
     public float maxSpeed = 5f;
+    public float neighbourRadius = 3f;
+
+    public Vector2 separationVector;
+    public Vector2 alignmentVector;
+    public Vector2 cohesionVector;
+
+    private List<Boid> neighbours;
 
     void Start()
     {
-        velocity = new Vector2(Random.Range(-maxSpeed, maxSpeed),
-        Random.Range(-maxSpeed, maxSpeed));
+        velocity = new Vector2(Random.Range(-maxSpeed, maxSpeed), Random.Range(-maxSpeed, maxSpeed));
+        neighbours = new List<Boid>();
     }
 
     void Update()
     {
-        transform.position += (Vector3)velocity * Time.deltaTime;
+        FindNeighbours();
+        ApplyRules();
+        Move();
         WrapAround();
+    }
+
+    void ApplyRules(){
+        separationVector = Separate();
+        alignmentVector = Align();
+        cohesionVector = Cohere();
+
+        velocity += separationVector + alignmentVector + cohesionVector;
+        velocity = Vector2.ClampMagnitude(velocity, maxSpeed);
+    }
+
+    Vector2 Separate()
+    {
+        // Separation rule
+        Vector2 steering = new Vector2();
+        int count = 0;
+
+        foreach (Boid neighbour in neighbours)
+        {
+            float distance = Vector2.Distance(transform.position, neighbour.transform.position);
+            if (distance > 0 && distance < neighbourRadius)
+            {
+                Vector2 difference = (Vector2)(transform.position - neighbour.transform.position);
+                difference = difference.normalized / distance;
+                steering += difference;
+                count ++;
+            }
+        }
+
+        if (count > 0)
+        {
+            steering /= count;
+        }
+
+        return steering;
+    }
+
+    Vector2 Align()
+    {
+        // Alignment rule
+        return new Vector2();
+    }
+
+    Vector2 Cohere()
+    {
+        // Cohesion rule
+        return new Vector2();
+    }
+
+    void FindNeighbours()
+    {
+        neighbours.Clear();
+        Boid[] boids = FindObjectsOfType<Boid>();
+
+        foreach (Boid other in boids)
+        {
+            if (other == this) continue; // Skips self instance
+
+            if (Vector2.Distance(this.transform.position, other.transform.position) <= neighbourRadius)
+            {
+                neighbours.Add(other);
+            }
+        }
+    }
+
+    void Move()
+    {
+
+        if (velocity != Vector2.zero)
+        {
+            float angle = Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(0, 0, angle);
+        }
+
+        transform.position += (Vector3)velocity * Time.deltaTime;
     }
 
     void WrapAround()
