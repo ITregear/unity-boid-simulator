@@ -30,9 +30,9 @@ public class Boid : MonoBehaviour
     void ApplyRules(){
         separationVector = Separate();
         alignmentVector = Align();
-        // cohesionVector = Cohere();
+        cohesionVector = Cohere();
 
-        velocity += separationVector + alignmentVector;
+        velocity += separationVector + alignmentVector + cohesionVector;
         velocity = Vector2.ClampMagnitude(velocity, maxSpeed);
     }
 
@@ -85,25 +85,27 @@ public class Boid : MonoBehaviour
         return averageVelocity;
     }
 
-    Vector2 Cohere()
+   Vector2 Cohere()
     {
-        // Cohesion rule
-        Vector2 averagePosition = new Vector2();
+        Vector2 averagePosition = Vector2.zero;
         int count = 0;
 
-        foreach (Boid neighbour in neighbours)
+        foreach (Boid neighbor in neighbours)
         {
-            averagePosition += (Vector2)neighbour.transform.position;
+            averagePosition += (Vector2)neighbor.transform.position;
             count++;
         }
 
         if (count > 0)
         {
             averagePosition /= count;
+            Vector2 cohesionForce = averagePosition - (Vector2)transform.position;
+            return cohesionForce;
         }
-        
-        return averagePosition;
-    }
+
+        return Vector2.zero;
+}
+
 
     void FindNeighbours()
     {
