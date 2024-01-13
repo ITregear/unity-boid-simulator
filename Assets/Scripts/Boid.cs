@@ -65,13 +65,44 @@ public class Boid : MonoBehaviour
     Vector2 Align()
     {
         // Alignment rule
-        return new Vector2();
+        Vector2 averageVelocity = new Vector2();
+        int count = 0;
+
+        foreach (Boid neighbour in neighbours)
+        {
+            if (neighbour.velocity != Vector2.zero)
+            {
+                averageVelocity += neighbour.velocity;
+                count++;
+            }
+        }
+
+        if (count > 0)
+        {
+            averageVelocity /= count;
+        }
+
+        return averageVelocity;
     }
 
     Vector2 Cohere()
     {
         // Cohesion rule
-        return new Vector2();
+        Vector2 averagePosition = new Vector2();
+        int count = 0;
+
+        foreach (Boid neighbour in neighbours)
+        {
+            averagePosition += (Vector2)neighbour.transform.position;
+            count++;
+        }
+
+        if (count > 0)
+        {
+            averagePosition /= count;
+        }
+        
+        return averagePosition;
     }
 
     void FindNeighbours()
