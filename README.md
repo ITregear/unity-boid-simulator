@@ -1,4 +1,5 @@
 # Unity Boid Simulator
+![Plane used to visualise boid](Assets/Sprites/Plane.png)
 
 ## Overview
 This repository contains the Unity Boid Simulator, a simulation tool for exploring the behavior of boids, or "bird-oid objects". Boids are a simulation of the flocking behavior of birds, fish, and other animals. They follow simple rules that result in complex, lifelike behavior. The core principles governing boid behavior are separation, alignment, and cohesion.
