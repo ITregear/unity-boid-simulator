@@ -4,14 +4,15 @@ using System.Collections.Generic;
 public class Boid : MonoBehaviour
 {
     public Vector2 velocity;
-    public float maxSpeed = 5f;
+    public float maxSpeed = 40f;
+    public float minSpeed = 2f;
     public float neighbourRadius = 3f;
     public float viewAngle = 120f;
 
     public Vector2 separationVector;
     public Vector2 alignmentVector;
     public Vector2 cohesionVector;
-    public float separationWeight = 1.5f;
+    public float separationWeight = 3.5f;
     public float alignmentWeight = 1.0f;
     public float cohesionWeight = 1.0f;
 
@@ -28,8 +29,8 @@ public class Boid : MonoBehaviour
     {
         FindNeighbours();
         ApplyRules();
+        AvoidObstacles();
         Move();
-        WrapAround();
     }
 
     void ApplyRules(){
@@ -38,7 +39,8 @@ public class Boid : MonoBehaviour
         cohesionVector = Cohere() * cohesionWeight;
 
         velocity += separationVector + alignmentVector + cohesionVector;
-        velocity = Vector2.ClampMagnitude(velocity, maxSpeed);
+        velocity = (velocity.magnitude > maxSpeed) ? velocity.normalized * maxSpeed : velocity; // Clamp to maxSpeed
+        velocity = (velocity.magnitude < minSpeed) ? velocity.normalized * minSpeed : velocity; // Clamp to minSpeed
     }
 
     Vector2 Separate()
@@ -147,21 +149,18 @@ public class Boid : MonoBehaviour
         transform.position += (Vector3)velocity * Time.deltaTime;
     }
 
-    void WrapAround()
+    void AvoidObstacles()
     {
-        var viewportPosition = Camera.main.WorldToViewportPoint(transform.position);
+        float raycastLength = 4.0f;
+        Vector2 raycastDirection = velocity.normalized;
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, raycastDirection, raycastLength);
 
-        // Define a margin to trigger the turn-around behavior
-        float margin = 0.1f;
+        Debug.DrawLine(transform.position, transform.position + (Vector3)raycastDirection * raycastLength, Color.red);
 
-        if (viewportPosition.x > 1 - margin || viewportPosition.x < 0 + margin)
+        if (hit.collider != null)
         {
-            velocity.x = -velocity.x; // Reverse the horizontal velocity
-        }
-
-        if (viewportPosition.y > 1 - margin || viewportPosition.y < 0 + margin)
-        {
-            velocity.y = -velocity.y; // Reverse the vertical velocity
+            Vector2 avoidDirection = Vector2.Reflect(velocity, hit.normal);
+            velocity = Vector2.Lerp(velocity, avoidDirection, Time.deltaTime * 50);
         }
     }
 

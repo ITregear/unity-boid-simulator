@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4277971784000802674}
   - component: {fileID: 8711656932452307575}
   - component: {fileID: 6722802759850599135}
+  - component: {fileID: -6189993068047935141}
   m_Layer: 0
   m_Name: boidPrefab
   m_TagString: Untagged
@@ -100,6 +101,37 @@ MonoBehaviour:
   velocity: {x: 0, y: 0}
   maxSpeed: 5
   neighbourRadius: 3
+  viewAngle: 120
   separationVector: {x: 0, y: 0}
   alignmentVector: {x: 0, y: 0}
   cohesionVector: {x: 0, y: 0}
+  separationWeight: 1.5
+  alignmentWeight: 1
+  cohesionWeight: 1
+--- !u!50 &-6189993068047935141
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6765725125321044499}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
