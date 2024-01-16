@@ -6,10 +6,15 @@ public class Boid : MonoBehaviour
     public Vector2 velocity;
     public float maxSpeed = 5f;
     public float neighbourRadius = 3f;
+    public float viewAngle = 120f;
 
     public Vector2 separationVector;
     public Vector2 alignmentVector;
     public Vector2 cohesionVector;
+    public float separationWeight = 1.5f;
+    public float alignmentWeight = 1.0f;
+    public float cohesionWeight = 1.0f;
+
 
     private List<Boid> neighbours;
 
@@ -28,9 +33,9 @@ public class Boid : MonoBehaviour
     }
 
     void ApplyRules(){
-        separationVector = Separate();
-        alignmentVector = Align();
-        cohesionVector = Cohere();
+        separationVector = Separate() * separationWeight;
+        alignmentVector = Align() * alignmentWeight;
+        cohesionVector = Cohere() * cohesionWeight;
 
         velocity += separationVector + alignmentVector + cohesionVector;
         velocity = Vector2.ClampMagnitude(velocity, maxSpeed);
@@ -114,11 +119,18 @@ public class Boid : MonoBehaviour
 
         foreach (Boid other in boids)
         {
-            if (other == this) continue; // Skips self instance
+            if (other == this) continue;
 
-            if (Vector2.Distance(this.transform.position, other.transform.position) <= neighbourRadius)
+            Vector2 directionToOther = other.transform.position - transform.position;
+
+            if (Vector2.Angle(velocity, directionToOther) < viewAngle / 2)
             {
-                neighbours.Add(other);
+                float distance = Vector2.Distance(transform.position, other.transform.position);
+
+                if (distance <= neighbourRadius)
+                {
+                    neighbours.Add(other);
+                }
             }
         }
     }
